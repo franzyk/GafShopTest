@@ -3,4 +3,8 @@ project(NegozioAbbigliamento C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(NegozioAbbigliamento main.c interface.c interface.h checksAndUtils.h checksAndUtils.c catalog.h catalog.c authentication.c authentication.h navigation.c navigation.h "admin.c" "admin.h" paymentDelivery.c paymentDelivery.h)
+include_directories(include)
+
+file(GLOB_RECURSE SOURCES "src/*.c")
+
+add_executable(NegozioAbbigliamento ${SOURCES})

@@ -79,33 +79,29 @@ void registerUser() {
     } while(emptyString(user.addressNumber) == 0 || checkAddressNumber(user.addressNumber) == 0);
     printf("\n\t\tINSERIRE LA DATA DI NASCITA UN CAMPO ALLA VOLTA:\n");
 
-    do{
-
+    do {
         do {
             printf("\n\t\tGIORNO: ");
             fflush(stdin);
-            scanf_s("%3[^\n]",user.gg,MAX_GG_MM_LENGTH);
-            user.gg[strcspn( user.gg, "\n")] = '\0';
-        }while(emptyString(user.gg) == 0 || isNumber(user.gg) == 0);
-        day = atoi(user.gg);
+            scanf_s("%3s", user.dob.day, (unsigned)_countof(user.dob.day));
+        } while (emptyString(user.dob.day) == 0 || isNumber(user.dob.day) == 0);
+        day = atoi(user.dob.day);
 
-        do{
+        do {
             printf("\n\t\tMESE: ");
             fflush(stdin);
-            scanf_s("%3[^\n]",user.mm,MAX_GG_MM_LENGTH);
-            user.mm[strcspn( user.mm, "\n")] = '\0';
-        }while(emptyString(user.mm)  == 0 || isNumber(user.mm) == 0);
-        month = atoi (user.mm);
-        do{
+            scanf_s("%3s", user.dob.month, (unsigned)_countof(user.dob.month));
+        } while (emptyString(user.dob.month) == 0 || isNumber(user.dob.month) == 0);
+        month = atoi(user.dob.month);
+
+        do {
             printf("\n\t\tANNO: ");
             fflush(stdin);
-            scanf_s("%5[^\n]",user.aaaa,MAX_AAAA_LENGTH);
-            user.aaaa[strcspn( user.aaaa, "\n")] = '\0';
-        }while(emptyString(user.aaaa)  == 0 || isNumber(user.aaaa) == 0);
-        year = atoi(user.aaaa);  // converto ogni data in int per facilitare i controlli di validità
+            scanf_s("%5s", user.dob.year, (unsigned)_countof(user.dob.year));
+        } while (emptyString(user.dob.year) == 0 || isNumber(user.dob.year) == 0);
+        year = atoi(user.dob.year);
 
-    }while(isValidDate(day, month, year) == 0 || isAgeValid(day, month, year) == 0);
-
+    } while (isValidDate(day, month, year) == 0 || isAgeValid(day, month, year) == 0);
 
     FILE *file = fopen("users.csv", "a");
     if (file == NULL) {
@@ -113,7 +109,7 @@ void registerUser() {
         return;
     }
 
-    fprintf(file, "%s,%s,%s,%s,%s,%s,%s,%hu,%hu,%hu,%d\n", user.email,user.password,user.name, user.surname, user.phoneNumber,user.address,user.addressNumber,day,month,year,0);
+    fprintf(file, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%d\n", user.email, user.password, user.name, user.surname, user.phoneNumber, user.address, user.addressNumber, user.dob.day, user.dob.month, user.dob.year, 0);
     //scrivo sul file l'utente registrato
 
     fclose(file);
@@ -204,29 +200,27 @@ void saveUserData(const char* email) {
             strcpy(user.name, strtok(NULL, ",")); // Copia il nome
             strcpy(user.surname, strtok(NULL, ",")); // Copia il cognome
             strcpy(user.phoneNumber, strtok(NULL, ",")); // Copia il numero di telefono
-            strcpy(user.address, strtok(NULL, ",")); // Copia l'indirizzo
-            strcpy(user.addressNumber, strtok(NULL, ",")); // Copia il numero civico
-            strcpy(user.gg, strtok(NULL, ",")); // Copia il giorno di nascita
-            strcpy(user.mm, strtok(NULL, ",")); // Copia il mese di nascita
-            strcpy(user.aaaa, strtok(NULL, ",")); // Copia l'anno di nascita
-            strcpy(tempName,user.name);   // salvo nome e mail dell'utente loggato perchè li utilizzo in altre funzioni
-            strcpy(tempEmail,user.email);
+            strcpy(user.address, strtok(NULL, ","));
+            strcpy(user.addressNumber, strtok(NULL, ","));
+            strcpy(user.dob.day, strtok(NULL, ","));
+            strcpy(user.dob.month, strtok(NULL, ","));
+            strcpy(user.dob.year, strtok(NULL, ","));
+            strcpy(tempName, user.name);
+            strcpy(tempEmail, user.email);
             logged = 1;
 
-            // Salva i dati dell'utente in un file CSV
-            FILE* profile = fopen("profile.csv", "w"); // Apre il file "profile.csv" in modalità di scrittura
+            FILE* profile = fopen("profile.csv", "w");
             if (profile == NULL) {
-                printf("Errore nell'apertura del file di output.\n"); // Se l'apertura del file fallisce, viene stampato un messaggio di errore e la funzione termina
+                printf("Errore nell'apertura del file di output.\n");
                 return;
             }
 
             fprintf(profile, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
                     user.email, user.password, user.name, user.surname, user.phoneNumber,
-                    user.address, user.addressNumber, user.gg, user.mm, user.aaaa); // Scrive i dati dell'utente nel file CSV
+                    user.address, user.addressNumber, user.dob.day, user.dob.month, user.dob.year);
 
-            fclose(profile); // Chiude il file
-
-            break; // Esce dal ciclo una volta trovati i dati dell'utente
+            fclose(profile);
+            break;
         }
     }
 
@@ -250,31 +244,30 @@ void printProfileData() {
     while (fgets(line, sizeof(line), file) != NULL) { // Legge ogni riga del file finché non raggiunge la fine
         User userData; // Dichiarazione di una variabile di tipo User per memorizzare i dati utente
 
-        // Effettua il parsing della riga letta e memorizza i valori nei campi corrispondenti di userData
-        int result = sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,\n]",
+        int result = sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]",
                             userData.email, userData.password, userData.name, userData.surname, userData.phoneNumber,
-                            userData.address, userData.addressNumber, userData.gg, userData.mm, userData.aaaa);
+                            userData.address, userData.addressNumber, userData.dob.day, userData.dob.month, userData.dob.year);
 
-        if (result == 10) { // Se il parsing ha successo e vengono letti tutti i 10 valori
-            tophead(); // Richiama la funzione tophead() (il suo scopo non è chiaro nel contesto fornito)
+        if (result == 10) {
+            tophead();
             printf("----------------------------------------\n");
             printf("| Dati del Profilo \n");
             printf("----------------------------------------\n");
-            printf("| Email: %s\n", userData.email); // Stampa il valore dell'email
+            printf("| Email: %s\n", userData.email);
             puts("|");
-            printf("| Password: %s\n", userData.password); // Stampa il valore della password
+            printf("| Password: %s\n", userData.password);
             puts("|");
-            printf("| Nome: %s\n", userData.name); // Stampa il valore del nome
+            printf("| Nome: %s\n", userData.name);
             puts("|");
-            printf("| Cognome: %s\n", userData.surname); // Stampa il valore del cognome
+            printf("| Cognome: %s\n", userData.surname);
             puts("|");
-            printf("| Numero di Telefono: %s\n", userData.phoneNumber); // Stampa il numero di telefono
+            printf("| Numero di Telefono: %s\n", userData.phoneNumber);
             puts("|");
-            printf("| Indirizzo: %s\n", userData.address); // Stampa l'indirizzo
+            printf("| Indirizzo: %s\n", userData.address);
             puts("|");
-            printf("| Numero Civico: %s\n", userData.addressNumber); // Stampa il numero civico
+            printf("| Numero Civico: %s\n", userData.addressNumber);
             puts("|");
-            printf("| Data di Nascita: %s/%s/%s\n", userData.gg, userData.mm, userData.aaaa); // Stampa la data di nascita
+            printf("| Data di Nascita: %s/%s/%s\n", userData.dob.day, userData.dob.month, userData.dob.year);
             puts("|");
             printf("----------------------------------------\n");
         }

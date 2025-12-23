@@ -2,23 +2,9 @@
 #define CHECKSANDUTILS_H
 
 #include <stdbool.h>
-
-#define MAX_EMAIL_LENGTH 51
-#define MIN_EMAIL_LENGHT 1
-#define MAX_NAME_SURNAME_LENGTH 40
-#define MAX_PASSWORD_LENGTH 22
-#define MAX_PHONENUMBER_LENGTH 12
-#define MAX_ADDRESS_LENGTH 80
-#define MAX_ADDRESSNUMBER_LENGTH 10
-#define MAX_GG_MM_LENGTH 4
-#define MAX_AAAA_LENGTH 6
-#define MAX_STATUS_WORD_LENGTH 20
-
-#define MAX_LINE_LENGTH (MAX_EMAIL_LENGTH + MAX_PASSWORD_LENGTH + 2 * MAX_NAME_SURNAME_LENGTH + MAX_PHONENUMBER_LENGTH + MAX_ADDRESS_LENGTH + MAX_ADDRESSNUMBER_LENGTH + 2 * MAX_GG_MM_LENGTH + MAX_AAAA_LENGTH + 12)
+#include "config.h"
 
 
-void loading();
-void refreshPage();
 int checkEmailDomain(char email[]);
 int checkEmailNameLength(const char *string);
 int emptyString(const char* string);

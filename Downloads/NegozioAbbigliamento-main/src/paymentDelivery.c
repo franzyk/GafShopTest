@@ -127,11 +127,10 @@ void createOrder() {
     int i = 0;
     char line[MAX_CLOTHINGITEM_LENGTH];
     while (fgets(line, MAX_CLOTHINGITEM_LENGTH, fCart) != NULL) {
-        ClothingItem item;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand,item.description, item.size, &item.price, &item.quantity);
-        // Scrivi i valori nel file separati da virgole
+        Product item;
+        sscanf(line, "%hu,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description, item.size, &item.price, &item.quantity);
         fprintf(file, "%hu,%s,%hu,%hu,%hu\n", idOrder, tempEmail, status, item.code, tempQty[i]);
-        decrease_quantity(item.code,tempQty[i] ); //Diminuisce il prodotto nel carrello
+        decrease_quantity(item.code, tempQty[i]);
         i++;
     }
 
@@ -217,16 +216,16 @@ void decrease_quantity(int id, int quantity) {
 
     char line[MAX_CLOTHINGITEM_LENGTH];
     while (fgets(line, sizeof(line), inputFile)) {
-        ClothingItem product;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%lf,%d",
+        Product product;
+        sscanf(line, "%hu,%[^,],%[^,],%[^,],%[^,],%lf,%d",
                &product.code, product.name, product.brand, product.description,
                product.size, &product.price, &product.quantity);
 
         if (product.code == id) {
-            product.quantity -= quantity;   //diminuisce la quantità rispetto a quanta ne ha comprata l'utente
+            product.quantity -= quantity;
         }
 
-        fprintf(outputFile, "%d,%s,%s,%s,%s,%.2lf,%d\n",
+        fprintf(outputFile, "%hu,%s,%s,%s,%s,%.2lf,%d\n",
                 product.code, product.name, product.brand, product.description,
                 product.size, product.price, product.quantity);
     }

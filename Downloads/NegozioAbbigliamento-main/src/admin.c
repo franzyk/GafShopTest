@@ -120,31 +120,29 @@ void showAllProfiles(){
     while (fgets(line, sizeof(line), file) != NULL) {   // Legge ogni riga del file finché non raggiunge la fine
         User userData; // Dichiarazione di una variabile di tipo User per memorizzare i dati utente
 
-        // Effettua il parsing della riga letta e memorizza i valori nei campi corrispondenti di userData
-        int result = sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,\n]",
+        int result = sscanf(line, "%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^,],%[^\n]",
                             userData.email, userData.password, userData.name, userData.surname, userData.phoneNumber,
-                            userData.address, userData.addressNumber, userData.gg, userData.mm, userData.aaaa);
+                            userData.address, userData.addressNumber, userData.dob.day, userData.dob.month, userData.dob.year);
 
-        if (result == 10) { // Se il parsing ha successo e vengono letti tutti i 10 valori
-
+        if (result == 10) {
             printf("----------------------------------------\n");
             printf("| Dati del Profilo \n");
             printf("----------------------------------------\n");
-            printf("| Email: %s\n", userData.email); // Stampa il valore dell'email
+            printf("| Email: %s\n", userData.email);
             puts("|");
-            printf("| Password: %s\n", userData.password); // Stampa il valore della password
+            printf("| Password: %s\n", userData.password);
             puts("|");
-            printf("| Nome: %s\n", userData.name); // Stampa il valore del nome
+            printf("| Nome: %s\n", userData.name);
             puts("|");
-            printf("| Cognome: %s\n", userData.surname); // Stampa il valore del cognome
+            printf("| Cognome: %s\n", userData.surname);
             puts("|");
-            printf("| Numero di Telefono: %s\n", userData.phoneNumber); // Stampa il numero di telefono
+            printf("| Numero di Telefono: %s\n", userData.phoneNumber);
             puts("|");
-            printf("| Indirizzo: %s\n", userData.address); // Stampa l'indirizzo
+            printf("| Indirizzo: %s\n", userData.address);
             puts("|");
-            printf("| Numero Civico: %s\n", userData.addressNumber); // Stampa il numero civico
+            printf("| Numero Civico: %s\n", userData.addressNumber);
             puts("|");
-            printf("| Data di Nascita: %s/%s/%s\n", userData.gg, userData.mm, userData.aaaa); // Stampa la data di nascita
+            printf("| Data di Nascita: %s/%s/%s\n", userData.dob.day, userData.dob.month, userData.dob.year);
             puts("|");
             printf("----------------------------------------\n\n\n\n\n\n");
         }
@@ -165,7 +163,7 @@ void editClothInfo(const unsigned short int idCloth){
     refreshPage();
     topheadAdmin(); // grafica
     cloth(idCloth); // stampa il vestito corrispondente all'id
-    ClothingItem item[2]; // item[0] viene salvato la riga attuale nell [1] la riga modificata
+    Product item[2]; // item[0] viene salvato la riga attuale nell [1] la riga modificata
 
     char price[MAX_PRODUCT_SIZE], quantity[MAX_PRODUCT_SIZE];
     FILE *inputFile = fopen("clothes.csv", "r");

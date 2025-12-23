@@ -1,30 +1,8 @@
 #include "checksAndUtils.h"
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#define loadTime1 20 // tempo di sospensione utilizzato nei caricamenti
-
-
-/**La funzione loading() mostra una simulazione di caricamento utilizzando una barra di avanzamento.*/
-
-void loading() {
-    unsigned short int i;
-    printf("\n\nCaricamento in corso... ");
-    for (i = 0; i < loadTime1; i++) {
-        Sleep(loadTime1);          // sospende l'esecuzione del programma per loadTime1 (solo per Windows)
-        printf("%c", 219);      //stampa il carattere ASCII 219 (un quadrato nero) su stdout
-    }
-    printf(" completato!\n");
-}
-
-
-/**refresh della pagina */
-
-void refreshPage() {
-    system("cls");      // serve solo a dare un nome più significativo per il programma programma
-}
 
 /**La funzione emptyString() fa un refresh della pagina */
 

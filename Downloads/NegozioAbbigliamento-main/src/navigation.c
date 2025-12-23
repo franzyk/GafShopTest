@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <stdlib.h>
 #include "checksAndUtils.h"
-#include "interface.h"
+#include "ui.h"
 #include "authentication.h"
 #include "catalog.h"
 #include "paymentDelivery.h"
@@ -10,27 +10,10 @@
 #define NUMBER_OF_LOCATION 30
 #define NUMBER_OF_CHOICE 2
 
-extern const unsigned short int global_location[NUMBER_OF_LOCATION][NUMBER_OF_CHOICE];
-extern bool logged;  // per il controllo se un utente è loggato o meno
-extern unsigned short int cartItems; // oggetti nel carrello
-extern unsigned short int clothesCheck[];  // controlla che nel carello non venga messo più dello stesso oggetto
-extern char tempEmail[];  // Email dell'utente loggato
 unsigned short int stato = 9;
-bool controlFlag; // Se si è admin nel secondo menu se si preme modifica
-                    // verrà mostrato un menu simile ma non uguale all'esplora.
-                    // controlFlag se è 1 siamo nel menu gestione se è zero siamo nel menu normale.
+bool controlFlag;
 
-
-
-/**La funzione control() controlla la logica di navigazione e gestione dei menu. Prende in input un parametro "location" di tipo "unsigned short int"
- * per determinare quale sezione del menu deve essere visualizzata. A seconda del valore di "location", la funzione esegue azioni diverse.
- * tramite il refresh delle pagine e l'uso delle freccette direzionali permette di muoversi attravverso i menu. tramite la matrice global_location
- * sa esattamente quante possibili opzioni ha l'utente salvo rari casi in cui sono state apportate modifiche. quindi con l'unione delle possibili scelte
- * e della location in cui ci troviamo all'interno del programma la funzione control reindirizza alle varie funzioni cosa fare in base alla scelta
- * dell' utente. premendo INVIO si decide quale opzione fare. La funzione gestisce la grafica e gli spostamenti delle frecce che selezionano i vari campi */
-
-
-void control(unsigned short int location) {
+void control(AppState* state, unsigned short int location) {
         unsigned short int admin = checkAdmin(tempEmail);
         bool flag = 0;
         unsigned short int selectedOption = 0;
@@ -67,7 +50,7 @@ void control(unsigned short int location) {
         }else if (location >= 9 && location <= 23) {  // stampa i vestiti singolarmente
             refreshPage();
             cloth(location);
-            if(logged == 1) {           // se si è loggati mette il bottone aggiungi al carrello sennò no
+            if(state->loggedIn) {
                 buttons(selectedOption, 2);
             }else{
                 buttons(selectedOption,7);
@@ -115,39 +98,32 @@ void control(unsigned short int location) {
                 keyPressed = getch();
 
                 if (keyPressed == KEY_RIGHT || keyPressed == KEY_DOWN) {
-                    if(location >= 9 && location <= 23 && logged == 0) {
-                        selectedOption = (selectedOption + 1) % (global_location[location - 1][1] - 1);  // il modulo serve a rimanere nel numero di scelte massime
-                    }else if(location == 26 && cartItems == 0) {
-                        // quando non ci sono oggetti nel carrello deve uscire solo il tasto indietro quindi diminuisco i tasti togliendone 2 perchè non ci sarà la grafica.
-                        selectedOption = (selectedOption + 1) % (global_location[location - 1][1] - 2);
-                    }else if(location == 24 && admin == 1) {
-                        // quando è collegato un admin si aggiunge il tasto gestione
-                        selectedOption = (selectedOption + 1) % (global_location[location - 1][1] + 1);
-                    }else if(location == 8 && controlFlag == 1) {
-                        // quando il menu è diverso in base a se ci troviamo nel menu gestione dell'admin o meno.
-                        selectedOption = (selectedOption + 1) % (global_location[location - 1][1] + 3);
-                    }else{
-                        selectedOption = (selectedOption + 1) % global_location[location - 1][1];
+                    if(location >= 9 && location <= 23 && !state->loggedIn) {
+                        selectedOption = (selectedOption + 1) % (state->navigationMap[location - 1][1] - 1);
+                    } else if(location == 26 && cartItems == 0) {
+                        selectedOption = (selectedOption + 1) % (state->navigationMap[location - 1][1] - 2);
+                    } else if(location == 24 && admin == 1) {
+                        selectedOption = (selectedOption + 1) % (state->navigationMap[location - 1][1] + 1);
+                    } else if(location == 8 && controlFlag == 1) {
+                        selectedOption = (selectedOption + 1) % (state->navigationMap[location - 1][1] + 3);
+                    } else {
+                        selectedOption = (selectedOption + 1) % state->navigationMap[location - 1][1];
                     }
                 } else if (keyPressed == KEY_LEFT || keyPressed == KEY_UP) {
-                    if(location >= 9 && location <= 23 && logged == 0) {
-                        selectedOption = (selectedOption - 1 + (global_location[location - 1][1] - 1)) % (global_location[location-1][1] - 1);
-                    }else if(location == 26 && cartItems == 0) {
-                        // quando non ci sono oggetti nel carrello deve uscire solo il tasto indietro quindi diminuisco i tasti togliendone 2 perchè non ci sarà la grafica.
-                        selectedOption = (selectedOption - 1 + (global_location[location - 1][1] - 2)) % (global_location[location-1][1] - 2);
-                    }else if(location == 24 && admin == 1) {
-                        // quando è collegato un admin si aggiunge il tasto gestione
-                        selectedOption = (selectedOption - 1 + (global_location[location - 1][1] + 1)) % (global_location[location-1][1] + 1);
-                    }else if(location == 8 && controlFlag == 1) {
-                        // quando il menu è diverso in base a se ci troviamo nel menu gestione dell'admin o meno.
-                        selectedOption = (selectedOption - 1 + (global_location[location - 1][1] + 3)) % (global_location[location-1][1] + 3);
-                    }else{
-                            selectedOption = (selectedOption - 1 + global_location[location - 1][1]) % global_location[location-1][1];
-                        }
+                    if(location >= 9 && location <= 23 && !state->loggedIn) {
+                        selectedOption = (selectedOption - 1 + (state->navigationMap[location - 1][1] - 1)) % (state->navigationMap[location-1][1] - 1);
+                    } else if(location == 26 && cartItems == 0) {
+                        selectedOption = (selectedOption - 1 + (state->navigationMap[location - 1][1] - 2)) % (state->navigationMap[location-1][1] - 2);
+                    } else if(location == 24 && admin == 1) {
+                        selectedOption = (selectedOption - 1 + (state->navigationMap[location - 1][1] + 1)) % (state->navigationMap[location-1][1] + 1);
+                    } else if(location == 8 && controlFlag == 1) {
+                        selectedOption = (selectedOption - 1 + (state->navigationMap[location - 1][1] + 3)) % (state->navigationMap[location-1][1] + 3);
+                    } else {
+                        selectedOption = (selectedOption - 1 + state->navigationMap[location - 1][1]) % state->navigationMap[location-1][1];
                     }
+                }
             } else if (keyPressed == KEY_ENTER) {
-                // Fa un azione in base alla posizione ovvero il valore di selectedOption
-                option(location,selectedOption);
+                option(state, location, selectedOption);
                 flag = 1;
             }
 
@@ -229,14 +205,14 @@ void control(unsigned short int location) {
 
 /**La funzione option() controlla la logica per la selezione delle opzioni di menu in base alla posizione e all'opzione selezionata.*/
 
-    void option(const unsigned short int location,const unsigned short int selectedOption) {
+    void option(AppState* state, const unsigned short int location,const unsigned short int selectedOption) {
 
         if (location == 1) {
             loading();
             refreshPage();
             switch(selectedOption) {
                 case 0:
-                    control(global_location[1][0]); // si va al secondo menu
+                    control(state, state->navigationMap[1][0]);
                     break;
                 case 1:
                     topheadLog();       //si entra nel login
@@ -252,121 +228,121 @@ void control(unsigned short int location) {
         }else if (location == 3) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[8][0]);   // prima maglia
+                    control(state, state->navigationMap[8][0]);
                     break;
                 case 1:
-                    control(global_location[9][0]);  //secondo
+                    control(state, state->navigationMap[9][0]);
                     break;
                 case 2:
-                    control(global_location[10][0]); // terza
+                    control(state, state->navigationMap[10][0]);
                     break;
             }
         }else if (location == 4) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[11][0]); // primo vestito
+                    control(state, state->navigationMap[11][0]);
                     break;
                 case 1:
-                    control(global_location[12][0]); // secondo
+                    control(state, state->navigationMap[12][0]);
                     break;
                 case 2:
-                    control(global_location[13][0]); // terzo
+                    control(state, state->navigationMap[13][0]);
                     break;
             }
         }else if (location == 5) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[14][0]); // primi occhiali
+                    control(state, state->navigationMap[14][0]);
                     break;
                 case 1:
-                    control(global_location[15][0]); // secondi
+                    control(state, state->navigationMap[15][0]);
                     break;
                 case 2:
-                    control(global_location[16][0]); //terzi
+                    control(state, state->navigationMap[16][0]);
                     break;
             }
         }else if (location == 6) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[17][0]); //primo jeans
+                    control(state, state->navigationMap[17][0]);
                     break;
                 case 1:
-                    control(global_location[18][0]); // secondo
+                    control(state, state->navigationMap[18][0]);
                     break;
                 case 2:
-                    control(global_location[19][0]);  //terzo
+                    control(state, state->navigationMap[19][0]);
                     break;
             }
         } else if (location == 7) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[20][0]);//primo cappello
+                    control(state, state->navigationMap[20][0]);
                     break;
                 case 1:
-                    control(global_location[21][0]);//secondo
+                    control(state, state->navigationMap[21][0]);
                     break;
                 case 2:
-                    control(global_location[22][0]);//terzo
+                    control(state, state->navigationMap[22][0]);
                     break;
             }
         }
 
         if ((location >= 3 && location <= 7) && selectedOption == 3) {
-            control(global_location[1][0]); // in tutti i casi torna al menu
+            control(state, state->navigationMap[1][0]);
         } else if (location == 8) {
-            if(controlFlag == 1){ // se controlFlag == 1 allora siamo nel menu admin e vengono mostrati i vestiti per essere modificati
+            if(controlFlag == 1){
                 switch (selectedOption) {
                     case 0:
                         if(stato == 9){
-                            editClothInfo(9); // modifica della prima maglietta
+                            editClothInfo(9);
                         }else if(stato == 10){
-                            editClothInfo(12);  // modifica del primo vestito
+                            editClothInfo(12);
                         }else if(stato == 11){
-                            editClothInfo(15);  // modifica del primo paio di occhili
+                            editClothInfo(15);
                         }else if(stato == 12){
-                            editClothInfo(18); // modifica del primo jeans
+                            editClothInfo(18);
                         }else if (stato == 13){
-                            editClothInfo(21); // modifica del primo cappello
+                            editClothInfo(21);
                         }
                         break;
                     case 1:
                         if(stato == 9){
-                            editClothInfo(10);    // modifica del  secondo
+                            editClothInfo(10);
                         }else if(stato == 10){
-                            editClothInfo(13);     // modifica del  secondo
+                            editClothInfo(13);
                         }else if(stato == 11){
-                            editClothInfo(16);     // modifica del  secondo
+                            editClothInfo(16);
                         }else if(stato == 12){
-                            editClothInfo(19);    // modifica del   secondo
+                            editClothInfo(19);
                         }else if (stato == 13){
-                            editClothInfo(22);    // modifica del   secondo
+                            editClothInfo(22);
                         }
                         break;
                     case 2:
                         if(stato == 9){
-                            editClothInfo(11);     // modifica del  terzo
+                            editClothInfo(11);
                         }else if(stato == 10){
-                            editClothInfo(14);      // modifica del terzo
+                            editClothInfo(14);
                         }else if(stato == 11){
-                            editClothInfo(17);      // modifica del terzo
+                            editClothInfo(17);
                         }else if(stato == 12){
-                            editClothInfo(20);     // modifica del  terzo
+                            editClothInfo(20);
                         }else if (stato == 13){
-                            editClothInfo(23);     // modifica del  terzo
+                            editClothInfo(23);
                         }
                         break;
                     case 3:
                         if (stato - 8 > 1) {
-                            stato--;                            // per muoversi tra i vari gruppi di 3 di vestiti
+                            stato--;
                             printf("\n%d\n",stato);
                         }else {
-                            control(global_location[28][0]);                    //ritorna la menu admin
+                            control(state, state->navigationMap[28][0]);
                         }
                         break;
                     case 4:
                         if (stato - 8 < 5) {
                             stato++;
-                            printf("\n%d\n",stato);                     // per muoversi tra i vari gruppi di 3 di vestiti
+                            printf("\n%d\n",stato);
                         }
                         break;
                 }
@@ -374,9 +350,9 @@ void control(unsigned short int location) {
                 switch (selectedOption) {
                     case 0:
                         if (stato > 9) {
-                            stato--;                       // per muoversi tra i vestiti
+                            stato--;
                         } else {
-                            control(global_location[1][0]);
+                            control(state, state->navigationMap[1][0]);
                         }
                         break;
                     case 1:
@@ -399,25 +375,25 @@ void control(unsigned short int location) {
         }else if (location == 24) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location[1][0]);  // ESPLORA CATALOGO
+                    control(state, state->navigationMap[1][0]);
                     break;
                 case 1:
-                    control(global_location[24][0]);     // menu del profilo
+                    control(state, state->navigationMap[24][0]);
                     break;
                 case 2:
-                    control(global_location[25][0]);      //menu del carrello
+                    control(state, state->navigationMap[25][0]);
                     break;
                 case 3:
                     loading();
                     refreshPage();
                     topheadOrd();
-                    showUserOrders(tempEmail); // LISTA DEGLI ORDINI
+                    showUserOrders(tempEmail);
                     puts("\n\n\n");
                     system("pause");
                     break;
                 case 4:
-                    logged = 0;
-                    control(global_location[0][0]); //LOGOUT
+                    state->loggedIn = false;
+                    control(state, state->navigationMap[0][0]);
                     break;
                 case 5:
                     loading();
@@ -427,19 +403,19 @@ void control(unsigned short int location) {
                     break;
                 case 6:
                     controlFlag = 1;
-                    control(global_location[28][0]); // PARTE GESTIONALE DELL'ADMIN
+                    control(state, state->navigationMap[28][0]);
                     break;
             }
-        }else if (location == 25 && selectedOption == 0){   // DAL PROFILO SE SI PREME PER TORNARE INDIETRO AL MENU
-            control(global_location[23][0]);
-        }else if(location >= 9 && location <= 23 && selectedOption == 1){ // SE VIENE PREMUTO IL TASTO COMPRA QUANDO SI STANNO VEDENDO I VESTITI
+        }else if (location == 25 && selectedOption == 0){
+            control(state, state->navigationMap[23][0]);
+        }else if(location >= 9 && location <= 23 && selectedOption == 1){
             puts("\n\n\t\tPRODOTTO AGGIUNTO AL CARRELLO OPPURE E' STATO GIA' AGGIUNTO");
             system("pause");
             cart(location);
         }else if (location == 26) {
             switch (selectedOption) {
                 case 0:
-                    control(global_location [23][0]);   //DAL CARRELLO TORNARE INDIETRO AL MENU
+                    control(state, state->navigationMap[23][0]);
                     break;
                 case 1:
                     cartManager();
@@ -452,10 +428,10 @@ void control(unsigned short int location) {
         }else if (location == 27){
             switch (selectedOption) {
                 case 0:
-                    control(global_location [23][0]); //DAL CARRELLO TORNARE INDIETRO AL MENU
+                    control(state, state->navigationMap[23][0]);
                     break;
                 case 1:
-                    control(global_location[27][0]); // CHIEDE ALL' UTENTE SE VUOLE USARE LA CARTA DI CREDITO O PAGARE ALLA CONSEGNA
+                    control(state, state->navigationMap[27][0]);
                     break;
             }
         }else if (location == 28){
@@ -474,7 +450,7 @@ void control(unsigned short int location) {
                     confirmOrder();
                     createOrder();
                     emptyFile("cart.csv");
-                    control(global_location[23][0]);  //torna al menu
+                    control(state, state->navigationMap[23][0]);
                     break;
                 case 1:
                     // PAGAMENTO ALLA CONSEGNA
@@ -483,7 +459,7 @@ void control(unsigned short int location) {
                     confirmOrder();
                     createOrder();
                     emptyFile("cart.csv");
-                    control(global_location[23][0]);     //torna al menu
+                    control(state, state->navigationMap[23][0]);
                     break;
             }
         }else if (location == 29){
@@ -503,8 +479,8 @@ void control(unsigned short int location) {
                     showAllUserOrders();
                     break;
                 case 4:
-                    controlFlag = 0;                             //esce dal menu admin e controlFlag torna a 0
-                    control(global_location [23][0]);
+                    controlFlag = 0;
+                    control(state, state->navigationMap[23][0]);
                     break;
             }
         }

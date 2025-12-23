@@ -1,10 +1,16 @@
 #ifndef USER_REGISTRATION_H
 #define USER_REGISTRATION_H
 
-#include "catalog.h"
+#include "config.h"
+#include <stdbool.h>
 
 typedef struct {
-    //nome, cognome,email, password, numero, indirizzo,n°civico, data di nascita.
+    char day[MAX_GG_MM_LENGTH];
+    char month[MAX_GG_MM_LENGTH];
+    char year[MAX_AAAA_LENGTH];
+} DateOfBirth;
+
+typedef struct {
     char name[MAX_NAME_SURNAME_LENGTH];
     char surname[MAX_NAME_SURNAME_LENGTH];
     char email[MAX_EMAIL_LENGTH];
@@ -12,10 +18,8 @@ typedef struct {
     char phoneNumber[MAX_PHONENUMBER_LENGTH];
     char address[MAX_ADDRESS_LENGTH];
     char addressNumber[MAX_ADDRESSNUMBER_LENGTH];
-    char gg [MAX_GG_MM_LENGTH];
-    char mm [MAX_GG_MM_LENGTH];
-    char aaaa [MAX_AAAA_LENGTH];
-    bool admin;
+    DateOfBirth dob;
+    bool isAdmin;
 } User;
 
 

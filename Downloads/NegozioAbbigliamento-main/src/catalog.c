@@ -81,12 +81,12 @@ void cart (unsigned short int location) {
         printf("Errore nell'apertura del file\n");
     }
 
-    char line[MAX_CLOTHINGITEM_LENGTH]; // linea con lunghezza massima dello struct dei vestiti
+    char line[MAX_CLOTHINGITEM_LENGTH];
     while (fgets(line, MAX_CLOTHINGITEM_LENGTH, file) != NULL) {
-        ClothingItem item;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand,item.description, item.size, &item.price, &item.quantity);
-        if(item.code == location){
-            fprintf(fCart, "%d,%s,%s,%s,%s,%.2lf,%d\n", item.code, item.name, item.brand, item.description, item.size, item.price, item.quantity); // scrive nel carrello
+        Product item;
+        sscanf(line, "%hu,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description, item.size, &item.price, &item.quantity);
+        if (item.code == location) {
+            fprintf(fCart, "%hu,%s,%s,%s,%s,%.2lf,%d\n", item.code, item.name, item.brand, item.description, item.size, item.price, item.quantity);
         }
     }
     fclose(file);
@@ -113,11 +113,11 @@ void cartManager(){
 
     char line[MAX_CLOTHINGITEM_LENGTH];
     while (fgets(line, MAX_CLOTHINGITEM_LENGTH, fCart) != NULL) {
-        ClothingItem item;
+        Product item;
         refreshPage();
         cartTophead(); //grafica
 
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description,item.size, &item.price, &item.quantity);
+        sscanf(line, "%hu,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description, item.size, &item.price, &item.quantity);
         cloth(item.code); // stampa il vestito con l'id corrispondente
         printf("\nINSERIRE LA QUANTITA' DEL PRODOTTO DA ORDINARE: ");
 
@@ -162,8 +162,8 @@ void idCartExtract() {
 
     char line[MAX_CLOTHINGITEM_LENGTH];
     while (fgets(line, MAX_CLOTHINGITEM_LENGTH, fCart) != NULL) {
-        ClothingItem item;
-        sscanf(line, "%d,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description,item.size, &item.price, &item.quantity);
+        Product item;
+        sscanf(line, "%hu,%[^,],%[^,],%[^,],%[^,],%lf,%d", &item.code, item.name, item.brand, item.description, item.size, &item.price, &item.quantity);
         cloth(item.code);
     }
 }
