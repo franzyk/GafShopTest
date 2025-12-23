@@ -41,4 +41,14 @@
 #define KEY_LEFT 75
 #define KEY_ENTER 13
 
+// File paths
+#define USERS_FILE "data/users.csv"
+#define CLOTHES_FILE "data/clothes.csv"
+#define CART_FILE "data/cart.csv"
+#define ORDERS_FILE "data/orders.csv"
+#define COUPON_FILE "data/coupon.csv"
+#define PROFILE_FILE "data/profile.csv"
+#define CLOTHES_TEMP_FILE "data/clothes_temp.csv"
+#define ORDERS_TEMP_FILE "data/orders_temp.csv"
+
 #endif //NEGOZIO_ABBIGLIAMENTO_CONFIG_H

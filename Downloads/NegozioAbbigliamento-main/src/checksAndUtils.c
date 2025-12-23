@@ -94,7 +94,7 @@ int checkEmailDomain(char email[]) {
 /**La funzione isEmailTaken() controlla se la mail è già stata usata perchè nella registrazione non si possono avere due mail uguali  */
 
 int isEmailTaken(const char* email) {
-    FILE *file = fopen("users.csv", "r");
+    FILE *file = fopen(USERS_FILE, "r");
 
     if (file == NULL) {
         printf("\n\t\t\t\tErrore nell'apertura del file.");
@@ -587,7 +587,7 @@ char* getStatus(unsigned short int status) {
 
 int checkAdmin(const char *email) {
     char *lastValue = NULL;
-    FILE *file = fopen("users.csv", "r");
+    FILE *file = fopen(USERS_FILE, "r");
     if (file == NULL) {
         printf("Impossibile aprire il file.\n");
         return -1;

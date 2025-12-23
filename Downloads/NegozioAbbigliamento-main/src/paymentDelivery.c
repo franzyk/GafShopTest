@@ -113,12 +113,12 @@ void createOrder() {
     // Apri il file in modalità append
     unsigned short int status;
     idOrder = findLargestIdOrder() + 1;
-    FILE* file = fopen("orders.csv", "a");
+    FILE* file = fopen(ORDERS_FILE, "a");
     if (file == NULL) {
         printf("Errore nell'apertura del file.\n");
         return;
     }
-    FILE* fCart = fopen("cart.csv", "r");
+    FILE* fCart = fopen(CART_FILE, "r");
     if (file == NULL) {
         printf("Errore nell'apertura del file\n");
         return;
@@ -147,7 +147,7 @@ void createOrder() {
 
 
 int findLargestIdOrder() {
-    FILE* file = fopen("orders.csv", "r");
+    FILE* file = fopen(ORDERS_FILE, "r");
     if (file == NULL) {
         printf("Impossibile aprire il file\n");
     }
@@ -186,7 +186,7 @@ int generateStatus() {
 
 void showUserOrders(char email[]){
     Order order;
-    FILE* file = fopen("orders.csv", "r");
+    FILE* file = fopen(ORDERS_FILE, "r");
     if (file == NULL) {
         printf("Impossibile aprire il file\n");
     }
@@ -206,8 +206,8 @@ void showUserOrders(char email[]){
 
 void decrease_quantity(int id, int quantity) {
 
-    FILE *inputFile = fopen("clothes.csv", "r");
-    FILE *outputFile = fopen("clothes_temp.csv", "w");
+    FILE *inputFile = fopen(CLOTHES_FILE, "r");
+    FILE *outputFile = fopen(CLOTHES_TEMP_FILE, "w");
 
     if (inputFile == NULL || outputFile == NULL) {
         printf("ERRORE NEL APERTURA DEL FILE\n");
@@ -233,8 +233,8 @@ void decrease_quantity(int id, int quantity) {
     fclose(inputFile);
     fclose(outputFile);
 
-    remove("clothes.csv");  // Rimuove il file originale
-    rename("clothes_temp.csv", "clothes.csv");  // Rinomina il file temporaneo
+    remove(CLOTHES_FILE);
+    rename(CLOTHES_TEMP_FILE, CLOTHES_FILE);
 }
 
 /**La funzione refundUserOrders() fa fare i rimborsi agli utenti e rimuove gli ordini dal file "orders.csv" */
@@ -243,8 +243,8 @@ void decrease_quantity(int id, int quantity) {
 void refundUserOrders(char email[]) {
     char refundId[MAX_CLOTHINGITEM_LENGTH];
     Order order;
-    FILE* inputFile = fopen("orders.csv", "r");
-    FILE* outputFile = fopen("orders_temp.csv", "w");
+    FILE* inputFile = fopen(ORDERS_FILE, "r");
+    FILE* outputFile = fopen(ORDERS_TEMP_FILE, "w");
     bool  idOrderFlag = 0;
 
     strcpy(refundId, "");
@@ -297,8 +297,8 @@ void refundUserOrders(char email[]) {
     fclose(inputFile);
     fclose(outputFile);
 
-    remove("orders.csv");  // Rimuove il file originale
-    rename("orders_temp.csv", "orders.csv");  // Rinomina il file temporaneo
+    remove(ORDERS_FILE);
+    rename(ORDERS_TEMP_FILE, ORDERS_FILE);
 
     if(idOrderFlag == 1) {
         loading();

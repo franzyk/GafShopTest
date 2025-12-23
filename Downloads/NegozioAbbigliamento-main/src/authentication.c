@@ -103,7 +103,7 @@ void registerUser() {
 
     } while (isValidDate(day, month, year) == 0 || isAgeValid(day, month, year) == 0);
 
-    FILE *file = fopen("users.csv", "a");
+    FILE *file = fopen(USERS_FILE, "a");
     if (file == NULL) {
         printf("Errore nell'apertura del file.");
         return;
@@ -142,7 +142,7 @@ int login() {
     fgets(password, sizeof(password), stdin);       // PASSWORD DA INSERIRE NEL LOGIN
     password[strcspn(password, "\n")] = '\0';
 
-    FILE *file = fopen("users.csv", "r");
+    FILE *file = fopen(USERS_FILE, "r");
     if (file == NULL) {
         printf("Errore nell'apertura del file.\n");
         return 0;
@@ -180,9 +180,9 @@ int login() {
 /** La funzione saveUserData() gestisce il salvataggio dei dati dell'utente in un file CSV separato chiamato "profile.csv".*/
 
 void saveUserData(const char* email) {
-    FILE* file = fopen("users.csv", "r"); // Apre il file "users.csv" in modalità di lettura
+    FILE* file = fopen(USERS_FILE, "r");
     if (file == NULL) {
-        printf("Errore nell'apertura del file.\n"); // Se l'apertura del file fallisce, viene stampato un messaggio di errore e la funzione termina
+        printf("Errore nell'apertura del file.\n");
         return;
     }
 
@@ -209,7 +209,7 @@ void saveUserData(const char* email) {
             strcpy(tempEmail, user.email);
             logged = 1;
 
-            FILE* profile = fopen("profile.csv", "w");
+            FILE* profile = fopen(PROFILE_FILE, "w");
             if (profile == NULL) {
                 printf("Errore nell'apertura del file di output.\n");
                 return;
@@ -233,9 +233,9 @@ void saveUserData(const char* email) {
 void printProfileData() {
     refreshPage(); // Richiama la funzione refreshPage() per aggiornare la pagina
 
-    FILE* file = fopen("profile.csv", "r"); // Apre il file "profile.csv" in modalità di lettura
+    FILE* file = fopen(PROFILE_FILE, "r");
     if (file == NULL) {
-        printf("Errore nell'apertura del file.\n"); // Se l'apertura del file fallisce, viene stampato un messaggio di errore e la funzione termina
+        printf("Errore nell'apertura del file.\n");
         return;
     }
 

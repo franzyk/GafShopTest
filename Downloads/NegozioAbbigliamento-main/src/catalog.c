@@ -72,11 +72,11 @@ void cart (unsigned short int location) {
         }
     }
     cartItems++; // aumenta i prodotti nel carrello
-    FILE* file = fopen("clothes.csv", "r");
+    FILE* file = fopen(CLOTHES_FILE, "r");
     if (file == NULL) {
         printf("Errore nell'apertura del file\n");
     }
-    FILE* fCart = fopen("cart.csv", "a");
+    FILE* fCart = fopen(CART_FILE, "a");
     if (file == NULL) {
         printf("Errore nell'apertura del file\n");
     }
@@ -106,7 +106,7 @@ void cartManager(){
     int i  = 0;
     loading();
 
-    FILE *fCart = fopen("cart.csv", "r");
+    FILE *fCart = fopen(CART_FILE, "r");
     if (fCart == NULL) {
         printf("Errore nell'apertura del file\n");
     }
@@ -155,7 +155,7 @@ La funzione idCartExtract() estrae gli ID degli articoli presenti nel carrello e
 
 void idCartExtract() {
 
-    FILE *fCart = fopen("cart.csv", "r");
+    FILE *fCart = fopen(CART_FILE, "r");
     if (fCart == NULL) {
         printf("Errore nell'apertura del file\n");
     }

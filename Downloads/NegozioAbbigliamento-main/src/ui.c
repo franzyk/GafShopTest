@@ -208,7 +208,7 @@ void menu () {
 }
 
 void cloth(unsigned short int a) {
-    FILE* file = fopen("clothes.csv", "r");
+    FILE* file = fopen(CLOTHES_FILE, "r");
     if (file == NULL) {
         printf("Errore nell'apertura del file\n");
     }

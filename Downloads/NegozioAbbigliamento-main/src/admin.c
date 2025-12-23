@@ -43,7 +43,7 @@ void generate_coupon(int percentage) {
 /**
 La funzione saveCoupon salva il coupon generato insieme alla percentuale di sconto associata in un file CSV chiamato "coupon.csv". */
 void saveCoupon(const char* coupon, int percentage) {
-    FILE* file = fopen("coupon.csv", "a");
+    FILE* file = fopen(COUPON_FILE, "a");
     if (file == NULL) {
         printf("Error opening the file.");
         return;
@@ -59,7 +59,7 @@ void saveCoupon(const char* coupon, int percentage) {
 La funzione readCoupon legge il file CSV "coupon.csv" e cerca un coupon corrispondente al coupon fornito dall'utente. */
 
 void readCoupon(const char userCoupon[]) {
-    FILE* file = fopen("coupon.csv", "r");
+    FILE* file = fopen(COUPON_FILE, "r");
     if (file == NULL) {
         printf("Error opening the file.");
     }
@@ -108,9 +108,9 @@ La funzione showAllProfiles visualizza tutti i profili utente presenti nel file 
 
 void showAllProfiles(){
     topheadAdmin(); // interfaccia grafica
-    FILE* file = fopen("users.csv", "r"); // Apre il file "profile.csv" in modalità di lettura
+    FILE* file = fopen(USERS_FILE, "r");
     if (file == NULL) {
-        printf("Errore nell'apertura del file.\n"); // Se l'apertura del file fallisce, viene stampato un messaggio di errore e la funzione termina
+        printf("Errore nell'apertura del file.\n");
         return;
     }
 
@@ -166,8 +166,8 @@ void editClothInfo(const unsigned short int idCloth){
     Product item[2]; // item[0] viene salvato la riga attuale nell [1] la riga modificata
 
     char price[MAX_PRODUCT_SIZE], quantity[MAX_PRODUCT_SIZE];
-    FILE *inputFile = fopen("clothes.csv", "r");
-    FILE *outputFile = fopen("clothes_temp.csv", "w");
+    FILE *inputFile = fopen(CLOTHES_FILE, "r");
+    FILE *outputFile = fopen(CLOTHES_TEMP_FILE, "w");
 
     strcpy(item[1].name, "");
     strcpy(item[1].brand, "");
@@ -262,8 +262,8 @@ void editClothInfo(const unsigned short int idCloth){
     fclose(inputFile);
     fclose(outputFile);
 
-    remove("clothes.csv");  // Rimuove il file originale
-    rename("clothes_temp.csv", "clothes.csv");  // Rinomina il file temporaneo
+    remove(CLOTHES_FILE);
+    rename(CLOTHES_TEMP_FILE, CLOTHES_FILE);
 
     puts("\n\n\t\tPRODOTTO MODIFICATO");
     system("pause");
@@ -277,7 +277,7 @@ void editClothInfo(const unsigned short int idCloth){
 void showAllUserOrders(){
     topheadAdmin();
     Order order;
-    FILE* file = fopen("orders.csv", "r");
+    FILE* file = fopen(ORDERS_FILE, "r");
     if (file == NULL) {
         printf("Impossibile aprire il file\n");
     }
